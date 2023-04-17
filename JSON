@@ -1,0 +1,39 @@
+[{"id":"2af96e9d7fff7910","type":"tab","label":"TINA_MOSTURA","disabled":false,"info":"","env":[]},
+{"id":"40a45d8543a1ec7f","type":"inject","z":"2af96e9d7fff7910","name":"","props":[{"p":"payload"},
+{"p":"topic","vt":"str"}],
+"repeat":"5","crontab":"","once":false,"onceDelay":0.1,"topic":"","payloadType":"date","x":110,"y":100,
+"wires":[["86eaf1bed3f8b280","d42cdcb998bf5151"]]},{"id":"60d7e985a482ec3a","type":"mysql","z":"2af96e9d7fff7910","mydb":"e5fd2903e0e4daae","name":"brassagem","x":480,"y":100,"wires":[[]]},
+{"id":"b11f6617f0c6e426","type":"debug","z":"2af96e9d7fff7910","name":"","active":true,"tosidebar":true,"console":false,"tostatus":false,
+"complete":"true","targetType":"full","statusVal":"","statusType":"auto","x":470,"y":160,"wires":[]},
+{"id":"568f3381b77af9df","type":"comment","z":"2af96e9d7fff7910","name":"Insere no banco informações sobre arriada das tinas de mostura.",
+"info":"","x":300,"y":40,"wires":[]},{"id":"86eaf1bed3f8b280","type":"function","z":"2af96e9d7fff7910","name":"tinaMostura1",
+"func":"// Criando variáveis\nlet codProdutoTina1 = global.get(\"ENSILAGEM_COD_PROD_TINA1\", \"storeInFile\");
+\nlet passoTina1 = global.get(\"ENSILAGEM_PASSO_TINA1\", 'storeInFile');\nlet SKU;
+\n\n// Definindo o produto de acordo com o cód.\nswitch(codProdutoTina1){\n    case 1:\n        SKU = \"BRAHMA\"
+;\n        break;\n    case 2:\n        SKU = \"SKOL\";\n        break;\n    case 3:\n        SKU = \"ANTARCTICA\";
+\n        break;\n    case 4:\n        SKU = \"SKOL PM\"\n        break;\n    case 5:\n        SKU = \"BOHEMIA\";
+\n        break;\n    case 6 : \n        SKU = \"MOSTO R\"\n        break;\n    case 7 :\n        SKU = \"SUB-ZERO\";
+\n        break;\n    case 8 :\n        SKU = \"ABIÚDA\";\n        break;\n    case 11:\n        SKU = \"BRAHMA DUPLO MALTE\";
+\n        break;\n    default:\n        SKU = codProdutoTina1;
+\n}\n\n// Definindo a query p/ o banco de dados \nlet query = `INSERT INTO tinasMostura (produto) VALUES ('${SKU}')`;
+\n\n// Verificando se a mensagem já foi enviada\nlet mensagemEnviada = flow.get(\"mensagemEnviada\", \"memory\") || false;
+\n\nif (passoTina1 == 8 && !mensagemEnviada) {\n    // Enviando a mensagem para o banco de dados\n    msg.topic = query
+\n    flow.set(\"mensagemEnviada\", true, \"memory\");
+\n    return msg;\n} if(passoTina1 > 8){\n    // Mensagem já enviada ou passoTina1 diferente de 8\n    flow.set(\"mensagemEnviada\", false, \"memory\");
+\n    //return null;\n}\n","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":290,"y":100,"wires":[["60d7e985a482ec3a","b11f6617f0c6e426"]]},
+{"id":"d42cdcb998bf5151","type":"function","z":"2af96e9d7fff7910","name":"tinaMostura2",
+"func":"// Criando variáveis\nlet codProdutoTina2 = global.get(\"ENSILAGEM_COD_PROD_TINA2\", \"storeInFile\");
+\nlet passoTina2 = global.get(\"ENSILAGEM_PASSO_TINA2\", 'storeInFile');\nlet SKU;
+\n\n// Definindo o produto de acordo com o cód.\nswitch(codProdutoTina2){\n    case 1:\n        SKU = \"BRAHMA\";\n        break;
+\n    case 2:\n        SKU = \"SKOL\";\n        break;\n    case 3:\n        SKU = \"ANTARCTICA\";
+\n        break;\n    case 4:\n        SKU = \"SKOL PM\"\n        break;\n    case 5:\n        SKU = \"BOHEMIA\";\n        break;
+\n    case 6 : \n        SKU = \"MOSTO R\"\n        break;\n    case 7 :\n        SKU = \"SUB-ZERO\";\n        break;
+\n    case 8 :\n        SKU = \"ABIÚDA\";\n        break;\n    case 11:\n        SKU = \"BRAHMA DUPLO MALTE\";
+\n        break;\n    default:\n        SKU = codProdutoTina2;\n}
+\n\n// Definindo a query p/ o banco de dados \nlet query = `INSERT INTO tinasMostura (produto) VALUES ('${SKU}')`;
+\n\n// Verificando se a mensagem já foi enviada\nlet mensagemEnviadaTina2 = flow.get(\"mensagemEnviadaTina2\", \"memory\") || false;
+\n\nif (passoTina2 == 8 && !mensagemEnviadaTina2) {\n    // Enviando a mensagem para o banco de dados\n    msg.topic = query;
+\n    flow.set(\"mensagemEnviadaTina2\", true, \"memory\");
+\n    return msg;\n} if(passoTina2 > 8){\n    // Mensagem já enviada ou passoTina2 diferente de 8\n    flow.set(\"mensagemEnviadaTina2\", false, \"memory\");
+\n    //return null;\n}\n","outputs":1,"noerr":0,"initialize":"","finalize":"","libs":[],"x":290,"y":140,"wires":[["60d7e985a482ec3a","b11f6617f0c6e426"]]},
+{"id":"e5fd2903e0e4daae","type":"MySQLdatabase","name":"","host":"0.0.0.0(host do banco)","port":"3306","db":"nome_do_banco","tz":"BRT (UTC-3)","charset":"UTF8"}]
